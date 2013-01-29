@@ -8,3 +8,4 @@ falk.egg-info/dependency_links.txt
 falk.egg-info/entry_points.txt
 falk.egg-info/not-zip-safe
 falk.egg-info/top_level.txt
+scripts/getting_data.py
