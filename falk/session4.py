@@ -42,5 +42,4 @@ def getCommitSeries(commitURL, cred):
 if __name__ == '__main__':
     cred = getUserAndPass()
     commitDataFrame=fetchCommitInfo(cred)
-    print commitDataFrame['viktorg']
 
