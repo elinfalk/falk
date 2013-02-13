@@ -1,0 +1,1 @@
+﻿I found that the most common day to commit is Wednesday and the most common hour is between 16 and 17 (17 not included). I also found that has commited anything on a sunday and that there are no commits between 23 and 2.
