@@ -20,7 +20,9 @@ python course test""",
       zip_safe=False,
       install_requires=[
 	'untangle',
-	'request'
+	'request',
+	'pandas',
+	'dateutil'
       ],
       entry_points="""
       # -*- Entry points: -*-
