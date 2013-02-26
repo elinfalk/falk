@@ -1,0 +1,25 @@
+Error: Number of arguments are wrong!
+Usage: check_repo.py <absolute path to repository>
+Filename: check_repo.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+     6                             @profile
+     7                             def checkRepo():
+     8     6.355 MB     0.000 MB       ''' Check that there is only one argument'''
+     9     6.355 MB     0.000 MB       if len(sys.argv) != 2:
+    10     6.363 MB     0.008 MB           print "Error: Number of arguments are wrong!"
+    11     6.363 MB     0.000 MB           print "Usage: check_repo.py <absolute path to repository>"
+    12     6.363 MB     0.000 MB           sys.exit()
+    13                               
+    14                                 absolutePath = sys.argv[1]
+    15                                 (repoDir, lastname) = os.path.split(absolutePath)
+    16                             
+    17                                 with RepoDir(absolutePath):
+    18                                     courseRepo = CourseRepo(lastname)
+    19                                     if courseRepo.check():
+    20                                         print "PASS"
+    21                                     else:
+    22                                         print "FAIL"
+
+

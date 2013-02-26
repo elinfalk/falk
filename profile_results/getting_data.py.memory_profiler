@@ -1,0 +1,11 @@
+Fraction of the outages with reason REPAIR: 0.558823529412
+Filename: getting_data.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+     4                             @profile
+     5     8.535 MB     0.000 MB   def gettingData():
+     6     9.195 MB     0.660 MB       outages = readNycOutages ("http://www.grandcentral.org/developers/data/nyct/nyct_ene.xml")
+     7     9.203 MB     0.008 MB       print "Fraction of the outages with reason REPAIR:",calculateRepairFraction(outages)
+
+

@@ -1,0 +1,28 @@
+PASS
+Wrote profile results to check_repo.py.lprof
+Timer unit: 1e-06 s
+
+File: check_repo.py
+Function: checkRepo at line 6
+Total time: 0.000517 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     6                                           @profile
+     7                                           def checkRepo():
+     8                                               ''' Check that there is only one argument'''
+     9         1           18     18.0      3.5      if len(sys.argv) != 2:
+    10                                                   print "Error: Number of arguments are wrong!"
+    11                                                   print "Usage: check_repo.py <absolute path to repository>"
+    12                                                   sys.exit()
+    13                                             
+    14         1            8      8.0      1.5      absolutePath = sys.argv[1]
+    15         1           43     43.0      8.3      (repoDir, lastname) = os.path.split(absolutePath)
+    16                                           
+    17         1           88     88.0     17.0      with RepoDir(absolutePath):
+    18         1           53     53.0     10.3          courseRepo = CourseRepo(lastname)
+    19         1          218    218.0     42.2          if courseRepo.check():
+    20         1           89     89.0     17.2              print "PASS"
+    21                                                   else:
+    22                                                       print "FAIL"
+

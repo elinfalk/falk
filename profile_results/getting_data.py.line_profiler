@@ -1,0 +1,15 @@
+Fraction of the outages with reason REPAIR: 0.558823529412
+Wrote profile results to getting_data.py.lprof
+Timer unit: 1e-06 s
+
+File: getting_data.py
+Function: gettingData at line 4
+Total time: 1.02357 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     4                                           @profile
+     5                                           def gettingData():
+     6         1      1021248 1021248.0     99.8      outages = readNycOutages ("http://www.grandcentral.org/developers/data/nyct/nyct_ene.xml")
+     7         1         2325   2325.0      0.2      print "Fraction of the outages with reason REPAIR:",calculateRepairFraction(outages)
+
