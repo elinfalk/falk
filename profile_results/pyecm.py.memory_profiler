@@ -1,0 +1,134 @@
+test
+73
+137
+3169
+98641
+99990001
+3199044596370769
+Filename: pyecm.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+    75                                     @profile        
+    76                             	def invert(a, b):
+    77                             		'''Computes the inverse of a modulo b. b must be odd.
+    78                             
+    79     8.215 MB     0.000 MB   Returns the inverse of a (mod b).'''
+    80   162.434 MB   154.219 MB   		if a == 0 or b == 0:
+    81                             			return 0
+    82                             
+    83   162.434 MB     0.000 MB   		truth = False
+    84   162.434 MB     0.000 MB   		if a < 0:
+    85                             			truth = True
+    86                             			a = -a
+    87                             
+    88   162.434 MB     0.000 MB   		b_orig = b
+    89   162.434 MB     0.000 MB   		alpha = 1
+    90    75.023 MB   -87.410 MB   		beta = 0
+    91                             
+    92   162.434 MB    87.410 MB   		while not a & 1:
+    93   162.438 MB     0.004 MB   			if alpha & 1:
+    94   154.023 MB    -8.414 MB   				alpha += b_orig
+    95   162.438 MB     8.414 MB   			alpha >>= 1
+    96   162.438 MB     0.000 MB   			a >>= 1
+    97                             
+    98   162.438 MB     0.000 MB   		if b > a:
+    99   162.438 MB     0.000 MB   			a, b = b, a
+   100     8.215 MB  -154.223 MB   			alpha, beta = beta, alpha
+   101                             
+   102   162.445 MB   154.230 MB   		while b != 0 and a != b:
+   103   162.445 MB     0.000 MB   			a -= b
+   104    46.984 MB  -115.461 MB   			alpha -= beta
+   105                             
+   106   162.445 MB   115.461 MB   			while not a & 1:
+   107   162.445 MB     0.000 MB   				if alpha & 1:
+   108    77.148 MB   -85.297 MB   					alpha += b_orig
+   109   162.445 MB    85.297 MB   				alpha >>= 1
+   110   162.445 MB     0.000 MB   				a >>= 1
+   111                             			
+   112   162.445 MB     0.000 MB   			if b > a:
+   113   162.445 MB     0.000 MB   				a,b = b,a
+   114   162.445 MB     0.000 MB   				alpha, beta = beta, alpha
+   115                             
+   116   162.445 MB     0.000 MB   		if a == b:
+   117   162.445 MB     0.000 MB   			a -= b
+   118   162.445 MB     0.000 MB   			alpha -= beta
+   119   162.445 MB     0.000 MB   			a, b = b, a
+   120   162.445 MB     0.000 MB   			alpha, beta = beta, alpha
+   121                             
+   122   162.445 MB     0.000 MB   		if a != 1:
+   123   162.445 MB     0.000 MB   			return 0
+   124     8.215 MB  -154.230 MB   
+   125   162.227 MB   154.012 MB   		if truth:
+   126                             			alpha = b_orig - alpha
+   127                             		
+   128   162.227 MB     0.000 MB   		return alpha
+
+
+Filename: pyecm.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   537                             @profile
+   538                             def parallel_invert(l, n):
+   539                             	'''Inverts all elements of a list modulo some number, using 3(n-1) modular multiplications and one inversion.
+   540                             
+   541     8.215 MB     0.000 MB   Returns the list with all elements inverted modulo 3(n-1).'''
+   542     8.215 MB     0.000 MB   	l_ = l[:]
+   543   162.434 MB   154.219 MB   	for i in xrange(len(l)-1):
+   544   162.434 MB     0.000 MB   		l[i+1] = (l[i] * l[i+1]) % n
+   545                             	
+   546   162.445 MB     0.012 MB   	inv = invert(l[-1], n)
+   547   162.445 MB     0.000 MB   	if inv == 0:
+   548   162.445 MB     0.000 MB   		return gcd(l[-1], n)
+   549     8.215 MB  -154.230 MB   
+   550   162.285 MB   154.070 MB   	for i in xrange(len(l)-1, 0, -1):
+   551   162.285 MB     0.000 MB   		l[i] = (inv * l[i-1]) % n
+   552   162.285 MB     0.000 MB   		inv = (inv * l_[i]) % n
+   553   162.285 MB     0.000 MB   	l[0] = inv
+   554                             
+   555   162.285 MB     0.000 MB   	return l
+
+
+Filename: pyecm.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   430                             @profile
+   431                             def double(p, n):
+   432                             	'''Doubles each point in the input list. Much like the add function, we take advantage of fast inversion.
+   433                             
+   434     8.215 MB     0.000 MB   Returns the doubled list.'''
+   435     8.215 MB     0.000 MB   	inv = range(len(p))
+   436                             
+   437   162.172 MB   153.957 MB   	for i in xrange(len(p)):
+   438   162.172 MB     0.000 MB   		inv[i] = p[i][1] << 1
+   439                             
+   440   162.285 MB     0.113 MB   	inv = parallel_invert(inv, n)
+   441                             
+   442     8.215 MB  -154.070 MB   	if not isinstance(inv, list):
+   443                             		return inv
+   444                             
+   445   162.395 MB   154.180 MB   	for i in xrange(len(p)):
+   446   162.395 MB     0.000 MB   		x = p[i][0]
+   447   162.395 MB     0.000 MB   		m = (x * x) % n
+   448   162.395 MB     0.000 MB   		m = ((m + m + m + p[i][2]) * inv[i]) % n
+   449   162.395 MB     0.000 MB   		p[i][0] = (m * m - x - x) % n
+   450   162.395 MB     0.000 MB   		p[i][1] = (m * (x - p[i][0]) - p[i][1]) % n
+   451                             
+   452   162.395 MB     0.000 MB   	return p
+
+
+Filename: pyecm.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+  1472                             @profile
+  1473     8.195 MB     0.000 MB   def profile_main():
+  1474     8.203 MB     0.008 MB   	print "test"
+  1475     8.203 MB     0.000 MB   	n = int(sys.argv[-1])
+  1476     8.203 MB     0.000 MB   	ov = 2*math.log(math.log(n))
+  1477   162.453 MB   154.250 MB   	for factor in factors(n, False, False, ov, 1.0):
+  1478                             		print factor
+
+

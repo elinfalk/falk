@@ -1,0 +1,125 @@
+Factoring 10000000000000000000000000000000000000000000000001:
+11
+197
+909091
+5076141624365532994918781726395939035533
+Wrote profile results to pyecm.py.lprof
+Timer unit: 1e-06 s
+
+File: pyecm.py
+Function: invert at line 76
+Total time: 4.2584 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    76                                                   @profile
+    77                                           	def invert(a, b):
+    78                                           		'''Computes the inverse of a modulo b. b must be odd.
+    79                                           
+    80                                           Returns the inverse of a (mod b).'''
+    81       230         3233     14.1      0.1  		if a == 0 or b == 0:
+    82                                           			return 0
+    83                                           
+    84       230         2310     10.0      0.1  		truth = False
+    85       230         2430     10.6      0.1  		if a < 0:
+    86                                           			truth = True
+    87                                           			a = -a
+    88                                           
+    89       230         2144      9.3      0.1  		b_orig = b
+    90       230         2080      9.0      0.0  		alpha = 1
+    91       230         2532     11.0      0.1  		beta = 0
+    92                                           
+    93       424         5069     12.0      0.1  		while not a & 1:
+    94       194         1946     10.0      0.0  			if alpha & 1:
+    95       112         1373     12.3      0.0  				alpha += b_orig
+    96       194         2257     11.6      0.1  			alpha >>= 1
+    97       194         2115     10.9      0.0  			a >>= 1
+    98                                           
+    99       230         2421     10.5      0.1  		if b > a:
+   100       230         2382     10.4      0.1  			a, b = b, a
+   101       230         2275      9.9      0.1  			alpha, beta = beta, alpha
+   102                                           
+   103     24834       282400     11.4      6.6  		while b != 0 and a != b:
+   104     24604       274645     11.2      6.4  			a -= b
+   105     24604       272303     11.1      6.4  			alpha -= beta
+   106                                           
+   107     73584       846917     11.5     19.9  			while not a & 1:
+   108     48980       562891     11.5     13.2  				if alpha & 1:
+   109     25106       278551     11.1      6.5  					alpha += b_orig
+   110     48980       607841     12.4     14.3  				alpha >>= 1
+   111     48980       569123     11.6     13.4  				a >>= 1
+   112                                           			
+   113     24604       254156     10.3      6.0  			if b > a:
+   114     13156       128168      9.7      3.0  				a,b = b,a
+   115     13156       126978      9.7      3.0  				alpha, beta = beta, alpha
+   116                                           
+   117       230         2257      9.8      0.1  		if a == b:
+   118       230         2624     11.4      0.1  			a -= b
+   119       230         2571     11.2      0.1  			alpha -= beta
+   120       230         2265      9.8      0.1  			a, b = b, a
+   121       230         2392     10.4      0.1  			alpha, beta = beta, alpha
+   122                                           
+   123       230         3446     15.0      0.1  		if a != 1:
+   124         1            6      6.0      0.0  			return 0
+   125                                           
+   126       229         2183      9.5      0.1  		if truth:
+   127                                           			alpha = b_orig - alpha
+   128                                           		
+   129       229         2114      9.2      0.0  		return alpha
+
+File: pyecm.py
+Function: double at line 431
+Total time: 11.5947 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   431                                           @profile
+   432                                           def double(p, n):
+   433                                           	'''Doubles each point in the input list. Much like the add function, we take advantage of fast inversion.
+   434                                           
+   435                                           Returns the doubled list.'''
+   436       208         5127     24.6      0.0  	inv = range(len(p))
+   437                                           
+   438     19136       202387     10.6      1.7  	for i in xrange(len(p)):
+   439     18928       268501     14.2      2.3  		inv[i] = p[i][1] << 1
+   440                                           
+   441       208      9069218  43602.0     78.2  	inv = parallel_invert(inv, n)
+   442                                           
+   443       208         3167     15.2      0.0  	if not isinstance(inv, list):
+   444                                           		return inv
+   445                                           
+   446     19136       211289     11.0      1.8  	for i in xrange(len(p)):
+   447     18928       216815     11.5      1.9  		x = p[i][0]
+   448     18928       349042     18.4      3.0  		m = (x * x) % n
+   449     18928       413196     21.8      3.6  		m = ((m + m + m + p[i][2]) * inv[i]) % n
+   450     18928       404342     21.4      3.5  		p[i][0] = (m * m - x - x) % n
+   451     18928       449408     23.7      3.9  		p[i][1] = (m * (x - p[i][0]) - p[i][1]) % n
+   452                                           
+   453       208         2165     10.4      0.0  	return p
+
+File: pyecm.py
+Function: parallel_invert at line 538
+Total time: 8.81538 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   538                                           @profile
+   539                                           def parallel_invert(l, n):
+   540                                           	'''Inverts all elements of a list modulo some number, using 3(n-1) modular multiplications and one inversion.
+   541                                           
+   542                                           Returns the list with all elements inverted modulo 3(n-1).'''
+   543       230         4403     19.1      0.0  	l_ = l[:]
+   544     20930       213945     10.2      2.4  	for i in xrange(len(l)-1):
+   545     20700       402529     19.4      4.6  		l[i+1] = (l[i] * l[i+1]) % n
+   546                                           	
+   547       230      7191732  31268.4     81.6  	inv = invert(l[-1], n)
+   548       230         3028     13.2      0.0  	if inv == 0:
+   549         1         1559   1559.0      0.0  		return gcd(l[-1], n)
+   550                                           
+   551     20839       214192     10.3      2.4  	for i in xrange(len(l)-1, 0, -1):
+   552     20610       398071     19.3      4.5  		l[i] = (inv * l[i-1]) % n
+   553     20610       380906     18.5      4.3  		inv = (inv * l_[i]) % n
+   554       229         2399     10.5      0.0  	l[0] = inv
+   555                                           
+   556       229         2618     11.4      0.0  	return l
+
